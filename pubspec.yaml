@@ -1,0 +1,41 @@
+name: city_gold
+version: 1.0.0+1
+publish_to: none
+description: A new Flutter project.
+environment: 
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies: 
+  cupertino_icons: ^1.0.2
+  get: 4.1.4
+
+  flutter_dotenv: ^5.0.0
+  webview_flutter: ^2.0.9
+  google_nav_bar: ^5.0.5
+  url_launcher: ^6.0.8
+  share: ^2.0.4
+  flutter_svg: ^0.22.0
+  http: ^0.13.3
+  connectivity: ^3.0.6
+
+  flutter: 
+    sdk: flutter
+
+dev_dependencies: 
+  flutter_test: 
+    sdk: flutter
+
+flutter:
+  assets:
+    - .env
+    - assets/images/
+    - assets/fonts/
+  fonts:
+    - family: SanFrancisco
+      fonts:
+        - asset: assets/fonts/SFNSText-Regular.otf
+        - asset: assets/fonts/SFNSText-Medium.otf
+          weight: 500
+        - asset: assets/fonts/SFNSText-Light.otf
+          weight: 300
+  uses-material-design: true
