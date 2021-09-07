@@ -15,7 +15,7 @@ class HomeController extends GetxController {
   late TextEditingController textEditingController;
 
   RxBool searchOpen = false.obs;
-  RxBool isLoading = false.obs, isError = false.obs;
+  RxBool isLoading = false.obs, isError = false.obs, cangoBack = false.obs;
 
   RxString dollar=''.obs, gold = ''.obs;
   final client = http.Client();
@@ -70,6 +70,10 @@ class HomeController extends GetxController {
   setLink(String link)async{
     url.value = link;
     await webController!.loadUrl(link);
+  }
+  checkGoBack()async{
+    cangoBack.value = await webController!.canGoBack();
+    print(cangoBack);
   }
 
   getData()async{

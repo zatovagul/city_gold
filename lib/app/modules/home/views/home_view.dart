@@ -23,15 +23,13 @@ class HomeView extends GetView<HomeController> {
       javascriptChannels: {
         JavascriptChannel(
           name: "alert",
-          onMessageReceived: (message){
-
-          }
+          onMessageReceived: (message){}
         )
       },
       onWebViewCreated: (controller){
         print("CONTROLLER CREATED");
         this.controller.webController = controller;
-        //controller.clearCache();
+        controller.clearCache();
       },
       navigationDelegate: (NavigationRequest request){
         print(request);
@@ -49,6 +47,7 @@ class HomeView extends GetView<HomeController> {
         print("Finished $s");
         controller.isLoading.value = false;
         controller.checkConnection();
+        controller.checkGoBack();
       },
     ));
     return Obx(()=>Scaffold(
@@ -56,27 +55,28 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: ()=>_scaffoldKey.currentState!.openDrawer(),
-          icon: Icon(CupertinoIcons.bars, color: AppColors.white,),
+          icon: Icon(CupertinoIcons.bars, color: AppColors.darkGrey,),
           iconSize: AppSizes.w1 * 30,
         ),
         title: Image.asset("assets/images/logo-old.png", width: AppSizes.w1 * 70,),
         centerTitle: true,
         actions: [
+          if(2==3)
           IconButton(
             onPressed: ()async{
               if(await controller.webController!.canGoBack())
                 controller.webController!.goBack();
             },
-            icon: Icon(Icons.arrow_back_ios_outlined, color: AppColors.white,),
+            icon: Icon(Icons.arrow_back_ios_outlined, color: AppColors.darkGrey,),
           ),
           IconButton(
             onPressed: ()=>controller.searchOpen.value = !controller.searchOpen.value,
-            icon: Icon(CupertinoIcons.search, color: AppColors.white,),
+            icon: Icon(CupertinoIcons.search, color: AppColors.darkGrey,),
           ),
-          if(2==3)
+          // if(2==3)
             IconButton(
               onPressed: (){},
-              icon: Icon(CupertinoIcons.person_alt_circle, color: AppColors.white,),
+              icon: Icon(CupertinoIcons.person_alt_circle, color: AppColors.darkGrey,),
             ),
         ],
       ),
@@ -103,6 +103,22 @@ class HomeView extends GetView<HomeController> {
               ),
             ],
           ),
+          // if(controller.cangoBack.value)
+          Positioned(
+              bottom: AppSizes.w1 * 12.5,
+              right: AppSizes.w1 * 9,
+              child: SizedBox(
+            width: AppSizes.w1 * 38,
+            height: AppSizes.w1 * 38,
+            child: ElevatedButton(
+              onPressed: ()async{
+                if(await controller.webController!.canGoBack())
+                  controller.webController!.goBack();
+              },
+              style: ElevatedButton.styleFrom(primary: AppColors.yellow, shape: CircleBorder(), padding: EdgeInsets.zero),
+              child: Center(child: Icon(Icons.arrow_back_ios_outlined, color: Colors.white,)),
+            ),
+          )),
           if(controller.isLoading.value)
           Container(
             color: Colors.white,
@@ -140,61 +156,82 @@ class HomeView extends GetView<HomeController> {
             )
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: AppSizes.w1 * 10),
-        color: Colors.white,
-        child: SafeArea(
-          child: GNav(
-            selectedIndex: controller.index.value,
-              activeColor: CupertinoColors.white,
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.w1 * 5, vertical: AppSizes.h1 * 5),
-              duration: Duration(milliseconds: 400),
-              tabBackgroundColor: AppColors.yellow,
-              gap: AppSizes.w1 * 5,
-              iconSize: AppSizes.w1 * 20,
-              tabMargin: EdgeInsets.all(0),
-              color: Colors.black,
-              tabs: _navBarsItems(),
-              tabBorderRadius: AppSizes.w1 * 10,
-              onTabChange: (index){
-                controller.setIndex(index);
-            },
-          ),
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedLabelStyle: AppTextStyles.white13.copyWith(fontSize: AppSizes.w1 * 11),
+        unselectedLabelStyle: AppTextStyles.white13.copyWith(fontSize: AppSizes.w1 * 9),
+        selectedItemColor: AppColors.yellow,
+        unselectedItemColor: AppColors.darkGrey,
+        items: _navBarsItems(),
+        showUnselectedLabels: true,
+        showSelectedLabels: true,
+        currentIndex: controller.index.value,
+        onTap: (index){
+          controller.setIndex(index);
+        },
       ),
+      // Container(
+      //   padding: EdgeInsets.symmetric(vertical: AppSizes.w1 * 10),
+      //   color: Colors.white,
+      //   child: SafeArea(
+      //     child: GNav(
+      //       selectedIndex: controller.index.value,
+      //         activeColor: CupertinoColors.white,
+      //         padding: EdgeInsets.symmetric(horizontal: AppSizes.w1 * 5, vertical: AppSizes.h1 * 5),
+      //         duration: Duration(milliseconds: 400),
+      //         tabBackgroundColor: AppColors.yellow,
+      //         gap: AppSizes.w1 * 5,
+      //         iconSize: AppSizes.w1 * 20,
+      //         tabMargin: EdgeInsets.all(0),
+      //         color: Colors.black,
+      //         tabs: _navBarsItems(),
+      //         tabBorderRadius: AppSizes.w1 * 10,
+      //         onTabChange: (index){
+      //           controller.setIndex(index);
+      //       },
+      //     ),
+      //   ),
+      // ),
     ));
   }
-  List<GButton> _navBarsItems() {
+  List<BottomNavigationBarItem> _navBarsItems() {
     return [
-      _getItem(CupertinoIcons.home, "Главная", (context)=>controller.setIndex(0),EdgeInsets.only(left: AppSizes.w1 * 10)),
-      _getItem(CupertinoIcons.shopping_cart, "Каталог", (context)=>controller.setIndex(1)),
-      _getItem(Icons.storefront_outlined, "Магазины", (context)=>controller.setIndex(2)),
-      _getItem(Icons.apartment, "Производителям", (context)=>controller.setIndex(3),),
-      _getItem(Icons.messenger_outline, "Блог", (context)=>controller.setIndex(4), EdgeInsets.only(right: AppSizes.w1 * 10)),
+      _getItem(CupertinoIcons.home, "Главная", 0,EdgeInsets.only(left: AppSizes.w1 * 10)),
+      _getItem(CupertinoIcons.shopping_cart, "Каталог", 1),
+      _getItem(Icons.storefront_outlined, "Магазины", 2),
+      _getItem(Icons.apartment, "Производителям", 3),
+      _getItem(Icons.messenger_outline, "Блог", 4, EdgeInsets.only(right: AppSizes.w1 * 10)),
     ];
   }
-  _getItem(IconData icon, String title, Function(BuildContext? context)? onPressed, [EdgeInsetsGeometry? margin] )=>GButton(
-      margin: margin,
-      icon: icon,
-      text: title,
-      textStyle: AppTextStyles.white13.copyWith(color: CupertinoColors.white),
-      iconColor: AppColors.white,
-    iconSize: AppSizes.w1 * 19.5,
-  );
+  _getItem(IconData icon, String title, int index, [EdgeInsetsGeometry? margin] )=>
+      BottomNavigationBarItem(
+        backgroundColor: Colors.white,
+          icon: Icon(icon, color: index==controller.index.value ? AppColors.yellow : AppColors.darkGrey ,
+            size: index==controller.index.value ? 30 : 22,
+          ),
+        label: title,
+      );
+  //     GButton(
+  //     margin: margin,
+  //     icon: icon,
+  //     text: title,
+  //     textStyle: AppTextStyles.white13.copyWith(color: CupertinoColors.white),
+  //     iconColor: AppColors.white,
+  //   iconSize: AppSizes.w1 * 19.5,
+  // );
   _getDrawer()=>Drawer(
     child: DecoratedBox(
-      decoration: BoxDecoration(color: AppColors.white),
+      decoration: BoxDecoration(color: Colors.white),
       child: ListView(
         physics: ClampingScrollPhysics(),
         padding: EdgeInsets.only(top: 0),
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: AppColors.blueGrey,
+              color: Colors.white,
             ),
             child: Align(
               alignment: Alignment.centerLeft,
-                child: Image.asset("assets/images/logo-old.png", width: AppSizes.h1 * 130,))),
+                child: Image.asset("assets/images/logo-old.png", width: AppSizes.h1 * 100,))),
           DrawerItemWidget(asset:'assets/images/hand-shake.png',text: "Сотрудничество", onPressed: (){
             Get.back();controller.setUrlLink("page/cooperation");
           }),
